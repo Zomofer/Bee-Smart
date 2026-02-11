@@ -18,6 +18,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Header />
+      // Contenido principal del dashboard (prueva2)
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.infoValue}>Apiary DashBorad</Text>
         <Text style={styles.subtitle}>
