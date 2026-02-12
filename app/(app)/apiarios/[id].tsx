@@ -24,6 +24,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import PhotoPicker from '@/components/PhotoPicker';
 
 export default function ApiarioDetailScreen() {
   const router = useRouter();
@@ -40,6 +41,7 @@ export default function ApiarioDetailScreen() {
   const [estadoGeneral, setEstadoGeneral] = useState('');
   const [fechaInstalacion, setFechaInstalacion] = useState('');
   const [observaciones, setObservaciones] = useState('');
+  const [fotoColmena, setFotoColmena] = useState<string>('');
 
   useEffect(() => {
     loadData();
@@ -67,6 +69,7 @@ export default function ApiarioDetailScreen() {
     setEstadoGeneral('');
     setFechaInstalacion('');
     setObservaciones('');
+    setFotoColmena('');
     setEditingColmenaId(null);
   };
 
@@ -88,6 +91,7 @@ export default function ApiarioDetailScreen() {
         estado_general: estadoGeneral.trim() || undefined,
         fecha_instalacion: fechaInstalacion,
         observaciones: observaciones.trim() || undefined,
+        foto_url: fotoColmena || undefined,
         id_apiario: idNum,
       };
 
@@ -113,6 +117,7 @@ export default function ApiarioDetailScreen() {
     setEstadoGeneral(colmena.estado_general || '');
     setFechaInstalacion(colmena.fecha_instalacion);
     setObservaciones(colmena.observaciones || '');
+    setFotoColmena(colmena.foto_url || '');
     setEditingColmenaId(colmena.id_colmena);
     setShowNewColmenaModal(true);
   };
@@ -337,6 +342,13 @@ export default function ApiarioDetailScreen() {
               style={styles.modalForm}
               showsVerticalScrollIndicator={false}
             >
+              <PhotoPicker
+                photoUri={fotoColmena}
+                onPhotoSelected={setFotoColmena}
+                onPhotoRemoved={() => setFotoColmena('')}
+                label="Foto de la Colmena"
+              />
+
               <View style={styles.formGroup}>
                 <Text style={styles.label}>Código *</Text>
                 <TextInput
