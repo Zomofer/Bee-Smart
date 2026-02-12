@@ -148,6 +148,13 @@ export default function ApiarioDetailScreen() {
 
   const renderColmenaItem = ({ item }: { item: Colmena }) => (
     <View style={styles.colmenaCard}>
+      {item.foto_url && (
+        <Image
+          source={{ uri: item.foto_url }}
+          style={styles.colmenaImage}
+        />
+      )}
+
       <View style={styles.colmenaHeader}>
         <View style={styles.colmenaInfo}>
           <Text style={styles.colmenaCodigo}>{item.codigo_colmena}</Text>
@@ -543,12 +550,18 @@ const styles = StyleSheet.create({
   colmenaCard: {
     backgroundColor: theme.colors.lightGray,
     borderRadius: 8,
-    padding: theme.spacing.md,
+    overflow: 'hidden',
+  },
+  colmenaImage: {
+    width: '100%',
+    height: 150,
+    backgroundColor: theme.colors.mediumGray,
   },
   colmenaHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+    padding: theme.spacing.md,
   },
   colmenaInfo: {
     flex: 1,
@@ -578,7 +591,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 2,
-    marginTop: theme.spacing.sm,
+    marginHorizontal: theme.spacing.md,
+    marginVertical: theme.spacing.sm,
     alignSelf: 'flex-start',
   },
   estadoText: {
@@ -589,7 +603,8 @@ const styles = StyleSheet.create({
   colmenaObservaciones: {
     fontSize: 12,
     color: theme.colors.darkGray,
-    marginTop: theme.spacing.sm,
+    marginHorizontal: theme.spacing.md,
+    marginBottom: theme.spacing.md,
     lineHeight: 16,
   },
   separator: {
