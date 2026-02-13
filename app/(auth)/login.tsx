@@ -1,144 +1,106 @@
 import { theme } from '@/constants/theme';
-import { useAuth } from '@/hooks/useAuth';
+import { firebaseConfig } from '@/firebase-config';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Image } from 'react-native';
-
+import { initializeApp } from 'firebase/app';
 import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+import React from 'react';
+import {
+  Image,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 require('@/assets/images/icon.png');
 
 export default function LoginScreen() {
-  const router = useRouter();
-  const { login, loginAsGuest } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const handleLogin = async () => {
-    if (!email || !password) {
-      setError('Por favor completa todos los campos');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      await login(email, password);
-      router.replace('/(app)');
-    } catch (err) {
-      setError('Error al iniciar sesión');
-    } finally {
-      setLoading(false);
-    }
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const handleCreateAccount = () => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log('Cuenta creada');
+        const user = userCredential.user;
+        console.log(user);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  const handleGuestLogin = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      await loginAsGuest();
-      router.replace('/(app)');
-    } catch (err) {
-      setError('Error al continuar como invitado');
-    } finally {
-      setLoading(false);
-    }
+  const handleSignIn = () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log('Sesión iniciada');
+        const user = userCredential.user;
+        console.log(user);
+
+        router.replace('/');
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
   };
+  const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
-      >
-        <View style={styles.content}>
-          <View style={styles.card}>
-            <View style={styles.Space} />
-            <Image
-              source={require('@/assets/images/logo.png')}
-              style={styles.logo}
-            />
-
-            <Text style={styles.title}>Bee-Smart</Text>
-            <Text style={styles.subtitle}>Suite de manejo</Text>
-
-            {error && <Text style={styles.error}>{error}</Text>}
-
-            <Text style={styles.index}>Email o Usuario</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="ingresa tu email o usuario"
-              placeholderTextColor={theme.colors.mediumGray}
-              value={email}
-              onChangeText={setEmail}
-              editable={!loading}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <View style={styles.card}>
+          <Image
+            source={require('@/assets/images/logo.png')}
+            style={styles.logo}
+          />
+          <Text style={styles.title}>Bee- Smart</Text>
+          <Text style={styles.subtitle}>Suite de manejo</Text>
+          <Text style={styles.index}>Email o Usuario</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Correo electrónico"
+            placeholderTextColor={theme.colors.mediumGray}
+            autoCapitalize="none"
+            onChangeText={(Text) => setEmail(Text)}
+          />
+          <View style={styles.passwordInfo}>
             <Text style={styles.index}>Contraseña</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Ingresa tu contraseña"
-              placeholderTextColor={theme.colors.mediumGray}
-              value={password}
-              onChangeText={setPassword}
-              editable={!loading}
-              secureTextEntry
-              autoCapitalize="none"
-            />
-
-            <TouchableOpacity
-              style={[styles.button, loading && styles.buttonDisabled]}
-              onPress={handleLogin}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color={theme.colors.white} />
-              ) : (
-                <Text style={styles.buttonText}>Ingresar</Text>
-              )}
+            <TouchableOpacity>
+              <Text style={styles.term}>¿Olvidaste tu contraseña?</Text>
             </TouchableOpacity>
-
-            <View style={styles.Space} />
-
-            <TouchableOpacity
-              style={[styles.guestButton, loading && styles.buttonDisabled]}
-              onPress={handleGuestLogin}
-              disabled={loading}
-            >
-              <Text style={styles.guestButtonText}>
-                Continuar como Invitado
-              </Text>
-            </TouchableOpacity>
-
-            <View style={styles.divider} />
-
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>¿Nuevo en Bee-Smart? </Text>
-
-              <TouchableOpacity
-                style={styles.buttonRegister}
-                onPress={() => router.push('/(auth)/register')}
-              >
-                <Text style={styles.registerButtonText}>Crear Cuenta</Text>
-              </TouchableOpacity>
-            </View>
           </View>
-          <Text style={styles.term}>
-            @2026 Bee-Smart. Todos los derechos reservados.
-          </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Insgresa tu Constraseña"
+            placeholderTextColor={theme.colors.mediumGray}
+            autoCapitalize="none"
+            onChangeText={(Text) => setPassword(Text)}
+            secureTextEntry={true}
+          />
+          <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+            <Text style={styles.buttonText}>Iniciar Sesión</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.guestButton} onPress={() => {}}>
+            <Text style={styles.guestButtonText}>Iniciar como invitado</Text>
+          </TouchableOpacity>
+          <View style={styles.divider} />
+          <TouchableOpacity
+            style={styles.buttonRegister}
+            onPress={handleCreateAccount}
+          >
+            <Text style={styles.registerButtonText}>Registrarse</Text>
+          </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -147,27 +109,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   keyboardView: {
     flex: 1,
   },
+  scrollView: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   card: {
+    width: 320,
+    height: 'auto',
     backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius * 1.2,
+    borderColor: theme.colors.mediumGray,
+    borderWidth: 2,
     padding: theme.spacing.lg,
-    marginBottom: theme.spacing.lg,
-    shadowColor: theme.ligth.shadowColor,
-    shadowOffset: theme.ligth.shadowOffset,
-    shadowOpacity: theme.ligth.shadowOpacity,
-    shadowRadius: theme.ligth.shadowRadius,
-    elevation: theme.ligth.elevation,
+    borderRadius: theme.borderRadius.lg,
+    shadowColor: theme.colors.black,
+    elevation: 4,
+  },
+  passwordInfo: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 70,
+    marginBottom: -20,
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 50,
+    height: 50,
     resizeMode: 'contain',
     alignSelf: 'center',
-    marginBottom: theme.spacing.md,
+    marginBottom: -5,
   },
   content: {
     flex: 1,
@@ -189,34 +167,36 @@ const styles = StyleSheet.create({
     color: theme.colors.darkGray,
     textAlign: 'center',
     marginTop: -10,
-    marginBottom: theme.spacing.xl,
+    marginBottom: theme.spacing.xs,
   },
   index: {
-    fontSize: theme.typography.body.fontSize,
-    color: theme.colors.darkGray,
+    fontSize: theme.typography.caption.fontSize,
+    color: theme.colors.black,
     textAlign: 'left',
     marginBottom: theme.spacing.sm,
+    fontWeight: '600',
   },
   term: {
     fontSize: theme.typography.term.fontSize,
-    color: theme.colors.darkGray,
+    color: theme.colors.primary,
     textAlign: 'center',
     marginBottom: theme.spacing.xl,
+    marginTop: 4,
   },
   input: {
     borderWidth: 1,
     borderColor: theme.colors.mediumGray,
-    borderRadius: theme.borderRadius,
+    borderRadius: theme.borderRadius.md,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.md,
     marginBottom: theme.spacing.md,
-    fontSize: theme.typography.body.fontSize,
+    fontSize: theme.typography.caption.fontSize,
     color: theme.colors.black,
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.lightGray,
   },
   button: {
     backgroundColor: theme.colors.primary,
-    borderRadius: theme.borderRadius,
+    borderRadius: theme.borderRadius.md,
     paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
     alignItems: 'center',
@@ -224,7 +204,7 @@ const styles = StyleSheet.create({
   },
   buttonRegister: {
     backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius,
+    borderRadius: theme.borderRadius.sm,
     borderWidth: 1,
     borderColor: theme.colors.primary,
     paddingVertical: theme.spacing.md,
@@ -251,10 +231,11 @@ const styles = StyleSheet.create({
   },
   guestButton: {
     backgroundColor: theme.colors.secondary,
-    borderRadius: theme.borderRadius,
+    borderRadius: theme.borderRadius.md,
     borderWidth: 1,
     borderColor: theme.colors.white,
     paddingVertical: theme.spacing.md,
+    marginTop: theme.spacing.xs,
     alignItems: 'center',
   },
   guestButtonText: {

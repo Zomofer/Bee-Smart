@@ -18,7 +18,6 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Header />
-      // Contenido principal del dashboard (prueva2)
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.infoValue}>Apiary DashBorad</Text>
         <Text style={styles.subtitle}>
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
     width: 120,
     minHeight: 140,
     backgroundColor: theme.colors.primary,
-    borderRadius: theme.borderRadius,
+    borderRadius: theme.borderRadius.xs,
     paddingHorizontal: theme.spacing.xs,
     paddingVertical: theme.spacing.xs,
     alignItems: 'center',
@@ -226,11 +225,11 @@ const styles = StyleSheet.create({
   imgCard: {
     overflow: 'hidden',
     elevation: 6,
-    borderEndEndRadius: theme.borderRadius,
-    borderEndStartRadius: theme.borderRadius,
+    borderEndEndRadius: theme.borderRadius.sm,
+    borderEndStartRadius: theme.borderRadius.sm,
     width: '100%',
     backgroundColor: theme.colors.lightGray,
-    borderRadius: theme.borderRadius,
+    borderRadius: theme.borderRadius.sm,
     padding: theme.spacing.md,
     marginBottom: theme.spacing.md,
     height: 180,
@@ -242,12 +241,12 @@ const styles = StyleSheet.create({
     width: 80,
     height: 50,
     backgroundColor: theme.colors.lightGray,
-    borderRadius: theme.borderRadius,
+    borderRadius: theme.borderRadius.sm,
     resizeMode: 'cover',
   },
   button: {
     backgroundColor: theme.colors.primary,
-    borderRadius: theme.borderRadius,
+    borderRadius: theme.borderRadius.sm,
     borderWidth: 1,
     borderColor: theme.colors.primary,
     paddingVertical: theme.spacing.md,
@@ -270,7 +269,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: theme.colors.lightGray,
-    borderRadius: theme.borderRadius,
+    borderRadius: theme.borderRadius.sm,
     padding: theme.spacing.md,
     marginBottom: theme.spacing.md,
   },
@@ -287,7 +286,7 @@ const styles = StyleSheet.create({
   },
   infoCard: {
     backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius,
+    borderRadius: theme.borderRadius.sm,
     padding: theme.spacing.md,
     marginBottom: theme.spacing.md,
     borderWidth: 1,
@@ -311,7 +310,7 @@ const styles = StyleSheet.create({
   },
   navigationHint: {
     backgroundColor: theme.colors.black,
-    borderRadius: theme.borderRadius,
+    borderRadius: theme.borderRadius.sm,
     padding: theme.spacing.md,
     marginTop: theme.spacing.lg,
   },
