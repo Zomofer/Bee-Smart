@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '@/components/Header';
 import { theme } from '@/constants/theme';
 
 export default function Page2Screen() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Header />
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
@@ -39,7 +40,7 @@ export default function Page2Screen() {
           </Text>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

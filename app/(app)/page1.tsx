@@ -15,6 +15,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import SearchFilter from '@/components/SearchFilter';
 
 interface ColmenaWithApiario extends Colmena {
@@ -156,7 +157,7 @@ export default function ColmenasScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Colmenas</Text>
         <TouchableOpacity
@@ -222,7 +223,7 @@ export default function ColmenasScreen() {
           )}
         </>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
