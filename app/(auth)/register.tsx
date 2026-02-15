@@ -103,13 +103,16 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.card}>
+          <View style={styles.content}>
             <Image
               source={require('@/assets/images/logo.png')}
               style={styles.logo}
             />
             <Text style={styles.title}>Bee- Smart</Text>
             <Text style={styles.subtitle}>Suite de manejo</Text>
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.title}>Crear Cuenta</Text>
             <Text style={styles.index}>Nombre completo</Text>
             <TextInput
               style={styles.input}
@@ -151,7 +154,15 @@ export default function LoginScreen() {
             >
               <Text style={styles.buttonText}>Crear Cuenta</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                router.replace('/(auth)/login');
+              }}
+            >
+              <Text style={styles.subtitle}>Regresar</Text>
+            </TouchableOpacity>
           </View>
+          <Text style={styles.term}>@2026 Bee-Smart</Text>
         </ScrollView>
 
         <Modal transparent visible={alertVisible} animationType="fade">
@@ -185,7 +196,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     width: '100%',
     alignItems: 'center',
-    paddingVertical: 80,
+    paddingVertical: 40,
+    paddingBottom: 200,
+    justifyContent: 'center',
   },
   card: {
     width: 320,
@@ -208,11 +221,12 @@ const styles = StyleSheet.create({
     height: 50,
     resizeMode: 'contain',
     alignSelf: 'center',
-    marginBottom: -5,
+    marginBottom: 0,
   },
   content: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: theme.spacing.lg,
   },
   Space: {
@@ -241,10 +255,10 @@ const styles = StyleSheet.create({
   },
   term: {
     fontSize: theme.typography.term.fontSize,
-    color: theme.colors.primary,
+    color: theme.colors.darkGray,
     textAlign: 'center',
-    marginBottom: theme.spacing.xl,
-    marginTop: 4,
+    marginBottom: theme.spacing.xs,
+    marginTop: 20,
   },
   input: {
     borderWidth: 1,
@@ -262,8 +276,9 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.md,
     paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
     alignItems: 'center',
-    marginTop: theme.spacing.md,
+    marginTop: theme.spacing.xs,
   },
   buttonRegister: {
     backgroundColor: theme.colors.white,
