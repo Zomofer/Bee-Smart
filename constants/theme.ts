@@ -41,12 +41,18 @@ export const theme = {
       fontWeight: '400' as const,
     },
   },
-  borderRadius: 8,
+  borderRadius: {
+    xs: 4,
+    sm: 8,
+    md: 16,
+    lg: 24,
+    xl: 32,
+  },
   ligth: {
     shadowColor: '#00000',
     shadowOffset: {
-      width: 0,
-      height: 2,
+      width: 5,
+      height: 9,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
