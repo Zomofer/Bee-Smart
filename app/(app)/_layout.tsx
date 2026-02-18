@@ -1,4 +1,3 @@
-import ColmenasIcon from '@/components/ColmenasIcon';
 import { theme } from '@/constants/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
