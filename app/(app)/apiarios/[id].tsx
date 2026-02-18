@@ -15,6 +15,7 @@ import {
     Plus,
     Trash2,
 } from 'lucide-react-native';
+import ColmenaDetail from '@/components/ColmenaDetail';
 import React, { useEffect, useState } from 'react';
 import {
     Alert,
@@ -40,6 +41,7 @@ export default function ApiarioDetailScreen() {
   const [showNewColmenaModal, setShowNewColmenaModal] = useState(false);
   const [editingColmenaId, setEditingColmenaId] = useState<number | null>(null);
   const [expandedColmenaId, setExpandedColmenaId] = useState<number | null>(null);
+  const [modalColmenaId, setModalColmenaId] = useState<number | null>(null);
 
   // Form states para crear/editar colmena
   const [codigoColmena, setCodigoColmena] = useState('');
@@ -220,16 +222,16 @@ export default function ApiarioDetailScreen() {
         </Text>
       )}
       {expandedColmenaId === item.id_colmena && (
-        <ColmenaInlineDetail colmenaId={item.id_colmena} apiarioId={apiario?.id_apiario ?? 0} />
+        <ColmenaInlineDetail colmenaId={item.id_colmena} />
       )}
     </TouchableOpacity>
   );
 
-  function ColmenaInlineDetail({ colmenaId, apiarioId }: { colmenaId: number; apiarioId: number }) {
+  function ColmenaInlineDetail({ colmenaId }: { colmenaId: number }) {
     return (
       <View style={{ padding: theme.spacing.md, backgroundColor: theme.colors.white }}>
         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-          <TouchableOpacity onPress={() => router.push(`/colmenas/${colmenaId}` as any)}>
+          <TouchableOpacity onPress={() => setModalColmenaId(colmenaId)}>
             <Text style={{ color: theme.colors.primary, fontSize: 12 }}>Detalle</Text>
           </TouchableOpacity>
         </View>
@@ -460,6 +462,13 @@ export default function ApiarioDetailScreen() {
             </ScrollView>
           </View>
         </View>
+      </Modal>
+
+      {/* modal detalle de colmena */}
+      <Modal visible={modalColmenaId !== null} animationType="slide">
+        {modalColmenaId !== null && (
+          <ColmenaDetail colmenaId={modalColmenaId} onClose={() => setModalColmenaId(null)} />
+        )}
       </Modal>
     </SafeAreaView>
   );
