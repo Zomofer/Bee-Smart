@@ -23,3 +23,26 @@ export interface Colmena {
 export interface ApiarioWithColmenas extends Apiario {
   colmenas: Colmena[];
 }
+
+export interface Inspeccion {
+  id_inspeccion: number;
+  fecha_inspeccion: string;
+  estado_colmena?: string;
+  observaciones?: string;
+  id_colmena: number;
+}
+
+export interface Producto {
+  id_producto: number;
+  nombre: string;
+}
+
+export interface Produccion {
+  id_produccion: number;
+  fecha_cosecha: string;
+  cantidad: number;
+  observaciones?: string;
+  id_colmena: number;
+  id_apiario: number;
+  id_producto: number;
+}
