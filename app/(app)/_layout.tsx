@@ -1,7 +1,8 @@
 import { theme } from '@/constants/theme';
 import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { Tabs } from 'expo-router';
-import { FileText, Hexagon, Home, Grid } from 'lucide-react-native';
+import { FileText, Hexagon, Home } from 'lucide-react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import ColmenasIcon from '@/components/ColmenasIcon';
@@ -62,14 +63,39 @@ export default function AppLayout() {
         name="inspecciones_page"
         options={{
           title: 'Inspecciones',
-          tabBarIcon: ({ color }) => <FileText color={color} size={24} />,
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name="clipboard-text-search-outline"
+              color={color}
+              size={24}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="produccion_page"
         options={{
           title: 'Produccion',
-          tabBarIcon: ({ color }) => <FileText color={color} size={24} />,
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name={"honey" as any}
+              color={color}
+              size={24}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="more"
+        options={{
+          title: 'Más opciones',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name="dots-horizontal"
+              color={color}
+              size={24}
+            />
+          ),
         }}
       />
     </Tabs>
