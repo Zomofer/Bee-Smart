@@ -1,4 +1,6 @@
+import DatePickerField from '@/components/DatePickerField';
 import SearchFilter from '@/components/SearchFilter';
+import StatePickerField from '@/components/StatePickerField';
 import { theme } from '@/constants/theme';
 import { apiarioService } from '@/src/services/apiarioService';
 import { colmenaService } from '@/src/services/colmenaService';
@@ -6,23 +8,18 @@ import { initDatabase } from '@/src/services/database';
 import { inspeccionService } from '@/src/services/inspeccionService';
 import { produccionService } from '@/src/services/produccionService';
 import { productoService } from '@/src/services/productoService';
-import DatePickerField from '@/components/DatePickerField';
-import StatePickerField from '@/components/StatePickerField';
-import { Edit2, Plus, Trash2 } from 'lucide-react-native';
-import { Modal, ScrollView, TextInput } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import { Apiario, Colmena } from '@/types/apiario';
+import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { Hexagon } from 'lucide-react-native';
+import { Hexagon, Plus } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
     Alert,
     FlatList,
     Image,
     StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+    Text, TextInput, TouchableOpacity,
+    View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
