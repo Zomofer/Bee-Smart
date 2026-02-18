@@ -1,33 +1,38 @@
-import PhotoPicker from '@/components/PhotoPicker';
 import DatePickerField from '@/components/DatePickerField';
 import StatePickerField from '@/components/StatePickerField';
 import { theme } from '@/constants/theme';
 import { apiarioService } from '@/src/services/apiarioService';
 import { colmenaService } from '@/src/services/colmenaService';
 import { inspeccionService } from '@/src/services/inspeccionService';
-import { Apiario, Colmena, Inspeccion } from '@/types/apiario';
+import { produccionService } from '@/src/services/produccionService';
+import { productoService } from '@/src/services/productoService';
+import { Apiario, Colmena, Inspeccion, Produccion, Producto } from '@/types/apiario';
+
+// extended version with runtime helper field
+interface ProduccionWithExtras extends Produccion {
+  productoNombre?: string;
+}
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
-  Calendar,
-  ChevronLeft,
-  Edit2,
-  MapPin,
-  Plus,
-  Trash2,
+    ChevronLeft,
+    Edit2,
+    Plus,
+    Trash2
 } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
-  FlatList,
-  Image,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    FlatList,
+    Image,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ColmenaDetailScreen() {
@@ -37,6 +42,8 @@ export default function ColmenaDetailScreen() {
   const [colmena, setColmena] = useState<Colmena | null>(null);
   const [apiario, setApiario] = useState<Apiario | null>(null);
   const [inspecciones, setInspecciones] = useState<Inspeccion[]>([]);
+  const [producciones, setProducciones] = useState<ProduccionWithExtras[]>([]);
+  const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
 
   // inspection modal states
@@ -45,6 +52,14 @@ export default function ColmenaDetailScreen() {
   const [fechaInspeccion, setFechaInspeccion] = useState('');
   const [estadoColmena, setEstadoColmena] = useState('');
   const [observaciones, setObservaciones] = useState('');
+
+  // production modal states
+  const [showProdModal, setShowProdModal] = useState(false);
+  const [prodEditingId, setProdEditingId] = useState<number | null>(null);
+  const [prodFecha, setProdFecha] = useState('');
+  const [prodCantidad, setProdCantidad] = useState('');
+  const [prodObserv, setProdObserv] = useState('');
+  const [prodProducto, setProdProducto] = useState<number | null>(null);
 
   useEffect(() => {
     loadData();
@@ -60,6 +75,15 @@ export default function ColmenaDetailScreen() {
         setApiario(api);
         const insps = await inspeccionService.getInspeccionesByColmena(idNum);
         setInspecciones(insps);
+        const prods = await produccionService.getProduccionByColmena(idNum);
+        const prodList = await productoService.getAllProductos();
+        setProductos(prodList);
+        // augment with product name
+        const prodsAug: ProduccionWithExtras[] = prods.map((p) => {
+          const prod = prodList.find((x) => x.id_producto === p.id_producto);
+          return { ...p, productoNombre: prod?.nombre };
+        });
+        setProducciones(prodsAug);
       }
     } catch (error) {
       Alert.alert('Error', 'No se pudo cargar la colmena');
@@ -145,6 +169,75 @@ export default function ColmenaDetailScreen() {
     ]);
   };
 
+  // production handlers
+  const handleOpenNewProd = () => {
+    setProdEditingId(null);
+    setProdFecha('');
+    setProdCantidad('');
+    setProdObserv('');
+    setProdProducto(null);
+    setShowProdModal(true);
+  };
+
+  const handleSaveProd = async () => {
+    if (!prodFecha || !prodCantidad || !prodProducto) {
+      Alert.alert('Error', 'Fecha, cantidad y producto son requeridos');
+      return;
+    }
+    try {
+      const payload = {
+        fecha_cosecha: prodFecha,
+        cantidad: parseFloat(prodCantidad),
+        observaciones: prodObserv || undefined,
+        id_colmena: colmena?.id_colmena,
+        id_apiario: colmena?.id_apiario,
+        id_producto: prodProducto,
+      } as any;
+
+      if (prodEditingId) {
+        await produccionService.updateProduccion(prodEditingId, payload);
+        Alert.alert('Éxito', 'Producción actualizada');
+      } else {
+        await produccionService.createProduccion(payload);
+        Alert.alert('Éxito', 'Producción registrada');
+      }
+      setShowProdModal(false);
+      await loadData();
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo guardar la producción');
+      console.error(error);
+    }
+  };
+
+  const handleEditProd = (item: ProduccionWithExtras) => {
+    setProdEditingId(item.id_produccion);
+    setProdFecha(item.fecha_cosecha);
+    setProdCantidad(item.cantidad.toString());
+    setProdObserv(item.observaciones || '');
+    setProdProducto(item.id_producto);
+    setShowProdModal(true);
+  };
+
+  const handleDeleteProd = (id: number) => {
+    Alert.alert('Confirmar eliminar', '¿Borrar este registro de producción?', [
+      { text: 'Cancelar' },
+      {
+        text: 'Eliminar',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await produccionService.deleteProduccion(id);
+            await loadData();
+            Alert.alert('Éxito', 'Producción eliminada');
+          } catch (error) {
+            Alert.alert('Error', 'No se pudo eliminar la producción');
+            console.error(error);
+          }
+        },
+      },
+    ]);
+  };
+
   const renderItem = ({ item }: { item: Inspeccion }) => (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -212,6 +305,22 @@ export default function ColmenaDetailScreen() {
           {colmena.observaciones && <Text style={styles.infoText}>Obs: {colmena.observaciones}</Text>}
         </View>
 
+        {/* placeholder actions for future features */}
+        <View style={styles.actionRow}>
+          <TouchableOpacity
+            style={styles.placeholderBtn}
+            onPress={() => Alert.alert('Funcionalidad pendiente', 'Registrar tratamiento aún no disponible')}
+          >
+            <Text style={styles.placeholderText}>Tratamiento</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.placeholderBtn}
+            onPress={() => Alert.alert('Funcionalidad pendiente', 'Registrar alimento aún no disponible')}
+          >
+            <Text style={styles.placeholderText}>Alimento</Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Inspecciones ({inspecciones.length})</Text>
           <TouchableOpacity style={styles.addButton} onPress={handleOpenNew}>
@@ -226,6 +335,44 @@ export default function ColmenaDetailScreen() {
             data={inspecciones}
             renderItem={renderItem}
             keyExtractor={(item) => item.id_inspeccion.toString()}
+            contentContainerStyle={styles.listContent}
+          />
+        )}
+
+        {/* Producción section */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Producción ({producciones.length})</Text>
+          <TouchableOpacity style={styles.addButton} onPress={handleOpenNewProd}>
+            <Plus size={20} color={theme.colors.white} />
+          </TouchableOpacity>
+        </View>
+
+        {producciones.length === 0 ? (
+          <Text style={styles.emptyText}>Sin registros de producción</Text>
+        ) : (
+          <FlatList
+            data={producciones}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <View style={styles.cardHeader}>
+                  <View style={styles.cardContent}>
+                    <Text style={styles.itemDate}>{new Date(item.fecha_cosecha).toLocaleDateString()}</Text>
+                    <Text style={styles.itemDate}>Cant: {item.cantidad}</Text>
+                    {item.productoNombre && <Text style={styles.productoText}>{item.productoNombre}</Text>}
+                  </View>
+                  <View style={styles.actions}>
+                    <TouchableOpacity onPress={() => handleEditProd(item)} style={styles.actionBtn}>
+                      <Edit2 size={16} color={theme.colors.primary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDeleteProd(item.id_produccion)} style={styles.actionBtn}>
+                      <Trash2 size={16} color={theme.colors.error} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                {item.observaciones && <Text style={styles.observaciones}>{item.observaciones}</Text>}
+              </View>
+            )}
+            keyExtractor={(item) => item.id_produccion.toString()}
             contentContainerStyle={styles.listContent}
           />
         )}
@@ -248,6 +395,48 @@ export default function ColmenaDetailScreen() {
               <Text style={styles.saveButtonText}>Guardar</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.cancelButton} onPress={() => setShowModal(false)}>
+              <Text style={styles.cancelButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      {/* Production modal */}
+      <Modal visible={showProdModal} animationType="slide">
+        <SafeAreaView style={styles.modalContainer}>
+          <ScrollView contentContainerStyle={styles.modalContent}>
+            <Text style={styles.modalTitle}>{prodEditingId ? 'Editar producción' : 'Nueva producción'}</Text>
+            <DatePickerField label="Fecha cosecha" value={prodFecha} onDateChange={setProdFecha} />
+            <Text style={styles.label}>Producto</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={prodProducto}
+                onValueChange={(v) => setProdProducto(v)}
+              >
+                <Picker.Item label="Seleccionar..." value={null} />
+                {productos.map((p) => (
+                  <Picker.Item key={p.id_producto} label={p.nombre} value={p.id_producto} />
+                ))}
+              </Picker>
+            </View>
+            <Text style={styles.label}>Cantidad</Text>
+            <TextInput
+              style={styles.input}
+              value={prodCantidad}
+              onChangeText={setProdCantidad}
+              keyboardType="numeric"
+            />
+            <TextInput
+              style={[styles.input, { height: 80 }]}
+              multiline
+              value={prodObserv}
+              onChangeText={setProdObserv}
+              placeholder="Observaciones"
+            />
+            <TouchableOpacity style={styles.saveButton} onPress={handleSaveProd}>
+              <Text style={styles.saveButtonText}>Guardar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cancelButton} onPress={() => setShowProdModal(false)}>
               <Text style={styles.cancelButtonText}>Cancelar</Text>
             </TouchableOpacity>
           </ScrollView>
@@ -394,6 +583,39 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: theme.colors.primary,
+    fontWeight: '600',
+  },
+  productoText: {
+    fontSize: 14,
+    color: theme.colors.black,
+    marginTop: theme.spacing.xs,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: theme.spacing.xs,
+    color: theme.colors.black,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: theme.colors.mediumGray,
+    borderRadius: 8,
+    marginBottom: theme.spacing.md,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: theme.spacing.md,
+  },
+  placeholderBtn: {
+    backgroundColor: theme.colors.secondary,
+    padding: theme.spacing.sm,
+    borderRadius: 8,
+    flex: 1,
+    marginHorizontal: theme.spacing.xs,
+    alignItems: 'center',
+  },
+  placeholderText: {
+    color: theme.colors.white,
     fontWeight: '600',
   },
 });
