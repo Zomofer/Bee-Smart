@@ -1,11 +1,11 @@
+import ColmenasIcon from '@/components/ColmenasIcon';
 import { theme } from '@/constants/theme';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { Tabs } from 'expo-router';
-import { FileText, Hexagon, Home } from 'lucide-react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Hexagon, Home } from 'lucide-react-native';
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import ColmenasIcon from '@/components/ColmenasIcon';
+import { StyleSheet } from 'react-native';
 
 
 
