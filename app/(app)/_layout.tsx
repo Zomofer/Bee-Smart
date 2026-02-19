@@ -1,4 +1,5 @@
 import ColmenasIcon from '@/components/ColmenasIcon';
+import HoneyBottleIcon from '@/components/HoneyBottleIcon';
 import { theme } from '@/constants/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
@@ -76,13 +77,7 @@ export default function AppLayout() {
         name="produccion_page"
         options={{
           title: 'Produccion',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name={"honey" as any}
-              color={color}
-              size={24}
-            />
-          ),
+          tabBarIcon: ({ color }) => <HoneyBottleIcon color={color} size={24} />,
         }}
       />
       <Tabs.Screen
