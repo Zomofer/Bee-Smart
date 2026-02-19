@@ -1,10 +1,12 @@
+import ColmenasIcon from '@/components/ColmenasIcon';
+import HoneyBottleIcon from '@/components/HoneyBottleIcon';
 import { theme } from '@/constants/theme';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { Tabs } from 'expo-router';
-import { FileText, Hexagon, Home, Grid } from 'lucide-react-native';
+import { Hexagon, Home } from 'lucide-react-native';
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import ColmenasIcon from '@/components/ColmenasIcon';
+import { StyleSheet } from 'react-native';
 
 
 
@@ -62,14 +64,33 @@ export default function AppLayout() {
         name="inspecciones_page"
         options={{
           title: 'Inspecciones',
-          tabBarIcon: ({ color }) => <FileText color={color} size={24} />,
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name="clipboard-text-search-outline"
+              color={color}
+              size={24}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="produccion_page"
         options={{
           title: 'Produccion',
-          tabBarIcon: ({ color }) => <FileText color={color} size={24} />,
+          tabBarIcon: ({ color }) => <HoneyBottleIcon color={color} size={24} />,
+        }}
+      />
+      <Tabs.Screen
+        name="more"
+        options={{
+          title: 'Más opciones',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name="dots-horizontal"
+              color={color}
+              size={24}
+            />
+          ),
         }}
       />
     </Tabs>
