@@ -1,4 +1,5 @@
 import DatePickerField from '@/components/DatePickerField';
+import Header from '@/components/Header';
 import SearchFilter from '@/components/SearchFilter';
 import StatePickerField from '@/components/StatePickerField';
 import { theme } from '@/constants/theme';
@@ -264,6 +265,7 @@ export default function InspeccionesPage() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Header />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Inspecciones Guardadas</Text>
         <TouchableOpacity
