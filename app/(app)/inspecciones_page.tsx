@@ -202,6 +202,14 @@ export default function InspeccionesPage() {
     return result;
   }, [inspecciones, activeFilter, searchQuery]);
 
+  const estadosUnicos = React.useMemo(() => {
+    const estados = new Set(
+      inspecciones.map((i) => i.estado_colmena).filter((e): e is string => !!e),
+    );
+
+    return ['Todos', ...Array.from(estados)];
+  }, [inspecciones]);
+
   const renderItem = ({ item }: { item: InspeccionWithExtras }) => {
     const isCompletado = item.estado_colmena?.toLowerCase() === 'completado';
 
@@ -275,6 +283,38 @@ export default function InspeccionesPage() {
         filters={[]}
         placeholder="Buscar reportes..."
       />
+
+      <View style={styles.filtersWrapper}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filtersContainer}
+        >
+          {estadosUnicos.map((estado) => {
+            const isActive =
+              (estado === 'Todos' && !activeFilter) || activeFilter === estado;
+
+            return (
+              <TouchableOpacity
+                key={estado}
+                style={[styles.filterChip, isActive && styles.filterChipActive]}
+                onPress={() =>
+                  setActiveFilter(estado === 'Todos' ? null : estado)
+                }
+              >
+                <Text
+                  style={[
+                    styles.filterText,
+                    isActive && styles.filterTextActive,
+                  ]}
+                >
+                  {estado}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
 
       <FlatList
         data={filteredInspecciones}
@@ -523,5 +563,38 @@ const styles = StyleSheet.create({
 
   rowView: {
     flexDirection: 'row',
+  },
+  filtersWrapper: {
+    height: 50, // 🔥 esto evita que se estire
+    justifyContent: 'center',
+  },
+
+  filtersContainer: {
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+
+  filterChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#EAEAEA',
+    marginRight: 10,
+    alignSelf: 'center', // 🔥 evita estiramiento
+  },
+
+  filterChipActive: {
+    backgroundColor: theme.colors.primary,
+  },
+
+  filterText: {
+    fontSize: 14,
+    color: '#555',
+    fontWeight: '500',
+  },
+
+  filterTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
 });
