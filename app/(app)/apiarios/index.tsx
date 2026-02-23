@@ -12,6 +12,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   FlatList,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -150,6 +151,9 @@ export default function ApiariosList() {
       onPress={() => router.push(`/apiarios/${item.id_apiario}` as any)}
       activeOpacity={0.7}
     >
+      {item.foto_url && (
+        <Image source={{ uri: item.foto_url }} style={styles.cardImage} />
+      )}
       <View style={styles.cardHeader}>
         <View style={styles.cardContent}>
           <Text style={styles.cardTitle}>{item.nombre}</Text>
@@ -393,5 +397,12 @@ const styles = StyleSheet.create({
   emptySubtext: {
     fontSize: 14,
     color: '#888',
+  },
+  cardImage: {
+    width: '100%',
+    height: 160,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    marginBottom: 12,
   },
 });
